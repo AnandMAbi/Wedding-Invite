@@ -80,7 +80,7 @@ function App() {
           <header className="hero-meta"><span>Our wedding</span><span>#TUTTUPALLA</span></header>
           <div className="hero-center">
             <img className="hero-logo" src="/Gold-text-no-bg.svg" alt="Sharani and Aravind monogram" />
-            <p className="light-kicker">Together with their families</p>
+            <p className="light-kicker">Together with our families</p>
             <h1>Sharani <i>&amp;</i> Aravind</h1>
             <p className="hero-date">Saturday &amp; Sunday, 12–13 December 2026</p>
           </div>
@@ -103,7 +103,7 @@ function App() {
         <section className="invite-section location-section">
           <div className="location-heading"><p className="kicker">Location</p><h2>Sai Priya<br /><i>Beach Resort</i></h2></div>
           <PhotoCarousel className="location-carousel" photos={venuePhotos} alt="Sai Priya Beach Resort" />
-          <p>We'll be celebrating by the sea at Sai Priya Beach Resort, Visakhapatnam.</p>
+          <p>We'll be celebrating by the beach at Sai Priya Beach Resort, Visakhapatnam.</p>
           <a className="pill-button" href="https://maps.app.goo.gl/id42pd1ZgCsBTgb98" target="_blank" rel="noreferrer">View the map <ArrowRight size={13} /></a>
         </section>
 
@@ -125,7 +125,7 @@ function App() {
             <p className="dress-emoji-title">🌸 FUSION PARTY</p>
             <p className="dress-sub">Pastels, pretty things &amp; a little bit of South Indian drama</p>
             <p>We're going for pastels + light colours + Indian silhouettes.</p>
-            <p><strong>Think:</strong> Kerala Kasavu sarees, Kalamkari blouses, Gadwal sarees, Mangalgiri/Mangalagiri sarees, Light cotton/silk sarees, Pastel kurtas / anarkalis, Kerala mundu or Pattu pancha.</p>
+            <p><strong>Think:</strong> Kerala kasavu sarees, Kalamkari blouses, Gadwal sarees, Mangalgiri/Mangalagiri sarees, light cotton/silk sarees, pastel kurtas / anarkalis, Kerala mundu or pattu pancha.</p>
             <p>Basically anything that says "I made an effort" without saying "I haven't sat down in three hours."</p>
             <p className="dress-muted">Colour mood: ivory • cream • blush • peach • sage • powder blue • lilac • butter yellow • soft pink</p>
           </div>
