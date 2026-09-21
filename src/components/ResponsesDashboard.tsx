@@ -59,6 +59,7 @@ export default function ResponsesDashboard() {
   const [search, setSearch] = useState('');
   const [tribeFilter, setTribeFilter] = useState('all');
   const [attendanceFilter, setAttendanceFilter] = useState('all');
+  const [stayFilter, setStayFilter] = useState('all');
 
   const fetchRows = async () => {
     setLoading(true);
@@ -163,6 +164,16 @@ export default function ResponsesDashboard() {
       if (attendanceFilter === 'sangeet' && r.sangeet !== 'yes') return false;
       if (attendanceFilter === 'wedding' && r.wedding !== 'yes') return false;
       if (attendanceFilter === 'stay' && r.staying_over !== 'yes') return false;
+      if (stayFilter === 'yes' && r.staying_over !== 'yes') return false;
+      if (stayFilter === 'no' && r.staying_over !== 'no') return false;
+      if (stayFilter === '11th' && r.accommodation_11th !== 'yes') return false;
+      if (stayFilter === '12th' && r.accommodation_12th !== 'yes') return false;
+      if (stayFilter === '13th' && r.accommodation_13th !== 'yes') return false;
+      if (
+        stayFilter === 'any_night' &&
+        !(r.accommodation_11th === 'yes' || r.accommodation_12th === 'yes' || r.accommodation_13th === 'yes')
+      )
+        return false;
       if (!q) return true;
       return (
         r.guest_name.toLowerCase().includes(q) ||
@@ -170,7 +181,7 @@ export default function ResponsesDashboard() {
         (r.tribe ?? '').toLowerCase().includes(q)
       );
     });
-  }, [rows, search, tribeFilter, attendanceFilter]);
+  }, [rows, search, tribeFilter, attendanceFilter, stayFilter]);
 
   const exportCsv = () => {
     const blob = new Blob([toCsv(filtered, slNoById)], { type: 'text/csv;charset=utf-8' });
@@ -258,6 +269,15 @@ export default function ResponsesDashboard() {
             <option value="sangeet">Sangeet ✓</option>
             <option value="wedding">Wedding ✓</option>
             <option value="stay">Needs stay</option>
+          </select>
+          <select value={stayFilter} onChange={(e) => setStayFilter(e.target.value)} className="rounded-full border border-[#E8DAD6] bg-white px-3 py-2 text-sm" title="Filter by last question (accommodation)">
+            <option value="all">Stay: all</option>
+            <option value="yes">Q5 Yes · needs help</option>
+            <option value="no">Q5 No</option>
+            <option value="11th">11th night ✓</option>
+            <option value="12th">12th night ✓</option>
+            <option value="13th">13th night ✓</option>
+            <option value="any_night">Any night ✓</option>
           </select>
           <span className="font-mono text-[11px] text-[#8a7569]">
             {filtered.length} / {rows.length} shown
