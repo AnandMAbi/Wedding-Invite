@@ -218,7 +218,7 @@ function InvitePage() {
             </fieldset>
 
             <fieldset className="answer-field">
-              <legend>Q5 · Would you need help with accommodation as we are not providing it at the venue?</legend>
+              <legend>Q5 · Would you need help with accommodation?</legend>
               <div className="radio-options">
                 <label className={form.stayingOver === 'yes' ? 'selected' : ''}><input type="radio" name="stayingOver" checked={form.stayingOver === 'yes'} onChange={() => updateAnswer('stayingOver', 'yes')} /> Yes</label>
                 <label className={form.stayingOver === 'no' ? 'selected' : ''}><input type="radio" name="stayingOver" checked={form.stayingOver === 'no'} onChange={() => updateAnswer('stayingOver', 'no')} /> No</label>
