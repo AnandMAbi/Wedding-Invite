@@ -35,9 +35,9 @@ function formatDate(iso: string) {
   }
 }
 
-function toCsv(rows: RsvpRow[]) {
+function toCsv(rows: RsvpRow[], slNoById: Map<string, number>) {
   const headers = [
-    'id', 'guest_name', 'guest_count', 'tribe', 'tribe_other',
+    'sl_no', 'id', 'guest_name', 'guest_count', 'tribe', 'tribe_other',
     'fusion_party', 'sangeet', 'wedding', 'staying_over',
     'accommodation_11th', 'accommodation_12th', 'accommodation_13th', 'created_at',
   ];
@@ -46,7 +46,7 @@ function toCsv(rows: RsvpRow[]) {
     const s = String(v);
     return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   };
-  return [headers.join(','), ...rows.map((r) => headers.map((h) => esc((r as Record<string, unknown>)[h])).join(','))].join('\n');
+  return [headers.join(','), ...rows.map((r) => headers.map((h) => (h === 'sl_no' ? esc(slNoById.get(r.id) ?? '') : esc((r as Record<string, unknown>)[h]))).join(','))].join('\n');
 }
 
 export default function ResponsesDashboard() {
@@ -66,7 +66,7 @@ export default function ResponsesDashboard() {
     const { data, error: fetchError } = await supabase
       .from('wedding_rsvp_responses')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: true });
     if (fetchError) {
       setError(fetchError.message);
       setStatus('error');
@@ -89,7 +89,7 @@ export default function ResponsesDashboard() {
           const at = new Date().toLocaleTimeString();
           if (payload.eventType === 'INSERT') {
             const row = payload.new as RsvpRow;
-            setRows((prev) => (prev.some((r) => r.id === row.id) ? prev : [row, ...prev]));
+            setRows((prev) => (prev.some((r) => r.id === row.id) ? prev : [...prev, row]));
             setFlashId(row.id);
             setLastEvent({ type: 'INSERT', at });
             setTimeout(() => setFlashId(null), 3000);
@@ -118,7 +118,7 @@ export default function ResponsesDashboard() {
       const { data } = await supabase
         .from('wedding_rsvp_responses')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: true });
       if (data) setRows(data as RsvpRow[]);
     }, POLL_FALLBACK_MS);
 
@@ -147,6 +147,14 @@ export default function ResponsesDashboard() {
     return ['all', ...Array.from(set)];
   }, [rows]);
 
+  // Sl No. in Supabase table order (oldest first by created_at).
+  // Kept stable when searching/filtering so counting matches the DB.
+  const slNoById = useMemo(() => {
+    const map = new Map<string, number>();
+    rows.forEach((r, i) => map.set(r.id, i + 1));
+    return map;
+  }, [rows]);
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return rows.filter((r) => {
@@ -165,7 +173,7 @@ export default function ResponsesDashboard() {
   }, [rows, search, tribeFilter, attendanceFilter]);
 
   const exportCsv = () => {
-    const blob = new Blob([toCsv(filtered)], { type: 'text/csv;charset=utf-8' });
+    const blob = new Blob([toCsv(filtered, slNoById)], { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -287,7 +295,7 @@ ADD TABLE public.wedding_rsvp_responses;`}</pre>
             <table className="w-full min-w-[980px] border-collapse text-left text-sm">
               <thead>
                 <tr className="border-b border-[#E8DAD6] bg-[#F6E4E1]/60 font-mono text-[10px] uppercase tracking-wider text-[#8a7569]">
-                  {['Guest', 'Count', 'Tribe', 'Fusion', 'Sangeet', 'Wedding', 'Stay?', '11th', '12th', '13th', 'Submitted'].map((h) => (
+                  {['Sl No.', 'Guest', 'Count', 'Tribe', 'Fusion', 'Sangeet', 'Wedding', 'Stay?', '11th', '12th', '13th', 'Submitted'].map((h) => (
                     <th key={h} className="px-3 py-2.5 font-medium">{h}</th>
                   ))}
                 </tr>
@@ -298,6 +306,7 @@ ADD TABLE public.wedding_rsvp_responses;`}</pre>
                     key={r.id}
                     className={`border-b border-[#F6E4E1] transition-colors last:border-0 hover:bg-[#FBF9F2] ${flashId === r.id ? 'bg-green-50' : ''}`}
                   >
+                    <td className="px-3 py-2.5 font-mono text-xs text-[#8a7569]">{slNoById.get(r.id) ?? '—'}</td>
                     <td className="px-3 py-2.5 font-medium">{r.guest_name}</td>
                     <td className="px-3 py-2.5 font-mono">{r.guest_count}</td>
                     <td className="px-3 py-2.5">
@@ -322,7 +331,8 @@ ADD TABLE public.wedding_rsvp_responses;`}</pre>
         )}
 
         <p className="mt-4 font-mono text-[11px] leading-relaxed text-[#8a7569]">
-          Source: <code>public.wedding_rsvp_responses</code> via Supabase Realtime (<code>postgres_changes · INSERT/UPDATE/DELETE</code>) +
+          Source: <code>public.wedding_rsvp_responses</code> ordered by <code>created_at ↑</code> (same as Supabase table, oldest first)
+          via Supabase Realtime (<code>postgres_changes · INSERT/UPDATE/DELETE</code>) +
           {` ${POLL_FALLBACK_MS / 1000}s`} polling fallback. Open the invite at <a className="underline" href="/">/</a> and
           this board at <a className="underline" href="#/dashboard">#/dashboard</a> or <a className="underline" href="/?view=dashboard">?view=dashboard</a>.
         </p>
