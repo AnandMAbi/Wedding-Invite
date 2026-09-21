@@ -133,13 +133,15 @@ export default function ResponsesDashboard() {
   const stats = useMemo(() => {
     const totalGuests = rows.reduce((sum, r) => sum + (r.guest_count ?? 0), 0);
     const count = (fn: (r: RsvpRow) => boolean) => rows.filter(fn).length;
+    const guestSum = (fn: (r: RsvpRow) => boolean) =>
+      rows.filter(fn).reduce((sum, r) => sum + (r.guest_count ?? 0), 0);
     return {
       responses: rows.length,
       totalGuests,
       fusionYes: count((r) => r.fusion_party === 'yes'),
       sangeetYes: count((r) => r.sangeet === 'yes'),
       weddingYes: count((r) => r.wedding === 'yes'),
-      needStay: count((r) => r.staying_over === 'yes'),
+      needStay: guestSum((r) => r.staying_over === 'yes'),
     };
   }, [rows]);
 
@@ -239,7 +241,7 @@ export default function ResponsesDashboard() {
             ['Fusion ✓', stats.fusionYes],
             ['Sangeet ✓', stats.sangeetYes],
             ['Wedding ✓', stats.weddingYes],
-            ['Need stay', stats.needStay],
+            ['Need stay (guests)', stats.needStay],
           ].map(([label, value]) => (
             <div key={label as string} className="rounded-xl border border-[#E8DAD6] bg-white/60 px-3 py-2.5">
               <p className="font-mono text-[10px] uppercase tracking-wider text-[#8a7569]">{label}</p>
