@@ -1,6 +1,24 @@
-import { useRef, useState, type FormEvent } from 'react';
+import { useEffect, useState, useRef, type FormEvent } from 'react';
 import { ArrowDown, ArrowLeft, ArrowRight, Check, Minus, Plus } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import ResponsesDashboard from '@/components/ResponsesDashboard';
+
+function useIsDashboard() {
+  const get = () =>
+    window.location.hash.includes('dashboard') ||
+    new URLSearchParams(window.location.search).get('view') === 'dashboard';
+  const [isDashboard, setIsDashboard] = useState(get);
+  useEffect(() => {
+    const onChange = () => setIsDashboard(get());
+    window.addEventListener('hashchange', onChange);
+    window.addEventListener('popstate', onChange);
+    return () => {
+      window.removeEventListener('hashchange', onChange);
+      window.removeEventListener('popstate', onChange);
+    };
+  }, []);
+  return isDashboard;
+}
 
 type Answer = 'yes' | 'no';
 type Tribe = 'IIM K' | 'PhonePe' | 'GVP' | 'Bethany' | 'Castrol' | 'Others';
@@ -36,6 +54,12 @@ const venuePhotos = ['/location-venue.png', '/location-venue-1.png'];
 const fusionPhotos = ['/dress-code-ref-1.jpeg', '/dress-code-ref-2.jpeg', '/dress-code-ref-3.jpeg', '/dress-code-ref-4.jpeg','/dress-code-ref-5.jpeg'];
 
 function App() {
+  const isDashboard = useIsDashboard();
+  if (isDashboard) return <ResponsesDashboard />;
+  return <InvitePage />;
+}
+
+function InvitePage() {
   const [form, setForm] = useState<FormState>(initialForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);

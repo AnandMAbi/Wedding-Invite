@@ -39,3 +39,12 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .dress-sangeet .dress-sub { color: #D6C7B8 !important; }
 .dress-sangeet .dress-muted { color: #B7C4A7 !important; }
 @media (max-width: 520px) { .invite-shell { padding: 0; }.invite-page { width: 100%; }.hero-section { min-height: 680px; }.invite-section { padding-left: 34px; padding-right: 34px; }.save-section { padding-left: 25px; padding-right: 25px; }.invite-footer { padding-left: 34px; padding-right: 34px; } }
+
+/* Realtime dashboard pills */
+.dash-pill { display: inline-block; padding: 2px 10px; border-radius: 999px; font: 10px 'DM Mono', monospace; letter-spacing: .04em; text-transform: uppercase; border: 1px solid transparent; }
+.dash-yes { color: #2f6b3a; background: #e6f4e8; border-color: #bfe3c6; }
+.dash-no { color: #8a7569; background: #F6E4E1; border-color: #E8DAD6; }
+.dash-na { color: #B7C4A7; background: transparent; border-color: #E8DAD6; }
+.dash-tribe { color: #5a4a42; background: #F6E4E1; border-color: #D6C7B8; }
+.font-serif { font-family: 'Cormorant Garamond', Georgia, serif; }
+.font-mono { font-family: 'DM Mono', monospace; }
